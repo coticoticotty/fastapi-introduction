@@ -1,9 +1,11 @@
 from fastapi import FastAPI, Depends, status, Response, HTTPException
-from .schemas import Blog, ShowBlog, User
+from .schemas import Blog, ShowBlog, User, ShowUser
 from . import models
 from .database import engine, sessionLocal
 from sqlalchemy.orm import Session
 from typing import List, Optional
+from passlib.context import CryptContext
+from .hashing import Hash
 
 app = FastAPI()
 
@@ -30,6 +32,11 @@ def all_fetch(db: Session = Depends(get_db)):
   blogs = db.query(models.Blog).all()
   return blogs
 
+@app.get('/user', status_code=status.HTTP_200_OK)
+def all_users(db: Session = Depends(get_db)):
+  users = db.query(models.User).all()
+  return users
+
 @app.get('/blog/{id}', status_code=status.HTTP_200_OK, response_model=ShowBlog)
 def show(id: int, response: Response, db: Session = Depends(get_db)):
   blog = db.query(models.Blog).filter(models.Blog.id == id).first()
@@ -53,3 +60,11 @@ def update(id, request: Blog, db: Session = Depends(get_db)):
     raise HTTPException(status.HTTP_404_NOT_FOUND, detail= f'Blog with the id {id} is not available')
   db.commit()
   return 'Update Completed'
+
+@app.post('/user')
+def create_user(request: User, db: Session = Depends(get_db)):
+  new_user = models.User(name=request.name, email=request.email, password=Hash.bycrypt(request.password))
+  db.add(new_user)
+  db.commit()
+  db.refresh(new_user)
+  return new_user

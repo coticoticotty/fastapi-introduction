@@ -4,6 +4,13 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+passlib = "*"
+bcrypt = "*"
+requests = "==2.0.0"
+fastapi = "*"
+sqlalchemy = "*"
+pydantic = "*"
+uvicorn = "*"
 
 [dev-packages]
 

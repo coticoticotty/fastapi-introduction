@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from blog.database import Base
 
 class Blog(BaseModel):
   title: str
@@ -14,9 +13,19 @@ class ShowBlog(BaseModel):
 
   class Config:
     orm_mode = True
-
+0
 class User(BaseModel):
   name: str
   email: str
   password: str
-  
+
+  class Config:
+    orm_mode: True
+
+class ShowUser(BaseModel):
+  name: str
+  email: str
+  password: str
+
+  class Config:
+    orm_mode: True
